@@ -1,0 +1,35 @@
+pipeline {
+  agent any
+  environment {
+    REGISTRY_CREDENTIALS = 'dockerhub-creds'
+    REGISTRY = 'docker.io'
+    IMAGE_NAME = 'mahendharjillala/socialmedia-frontend'
+    VITE_API_BASE_URL = '/api'
+  }
+  stages {
+    stage('Checkout'){ steps{ checkout scm } }
+    stage('Docker Build & Push') {
+      steps {
+        script {
+          def tag = "${IMAGE_NAME}:${env.BUILD_NUMBER}"
+          sh "docker build --build-arg VITE_API_BASE_URL=${VITE_API_BASE_URL} -t ${tag} ."
+          withCredentials([usernamePassword(credentialsId: env.REGISTRY_CREDENTIALS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+            sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER ${REGISTRY} --password-stdin"
+            sh "docker push ${tag}"
+            sh "docker tag ${tag} ${IMAGE_NAME}:latest"
+            sh "docker push ${IMAGE_NAME}:latest"
+          }
+        }
+      }
+    }
+    stage('Deploy') {
+      steps {
+        sh '''
+          cd /Users/mahendharjillala/socialmedia
+          docker compose pull frontend
+          docker compose up -d frontend
+        '''
+      }
+    }
+  }
+}

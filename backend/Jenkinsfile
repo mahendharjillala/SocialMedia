@@ -1,0 +1,37 @@
+pipeline {
+  agent any
+  environment {
+    REGISTRY_CREDENTIALS = 'dockerhub-creds'
+    REGISTRY = 'docker.io'
+    IMAGE_NAME = 'mahendharjillala/socialmedia-backend'
+  }
+  stages {
+    stage('Checkout'){ steps { checkout scm } }
+    stage('Docker Build & Push') {
+      steps {
+        script {
+          def tag = "${IMAGE_NAME}:${env.BUILD_NUMBER}"
+          sh "docker build -t ${tag} ."
+          withCredentials([usernamePassword(credentialsId: env.REGISTRY_CREDENTIALS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+            sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER ${REGISTRY} --password-stdin"
+            sh "docker push ${tag}"
+            sh "docker tag ${tag} ${IMAGE_NAME}:latest"
+            sh "docker push ${IMAGE_NAME}:latest"
+          }
+        }
+      }
+    }
+    stage('Deploy') {
+      steps {
+        sh '''
+          # Ensure deploy directory exists and update compose file from repo
+          mkdir -p /Users/mahendharjillala/socialmedia
+          cp -f infra/docker-compose.yml /Users/mahendharjillala/socialmedia/docker-compose.yml
+          cd /Users/mahendharjillala/socialmedia
+          docker compose pull backend
+          docker compose up -d backend
+        '''
+      }
+    }
+  }
+}

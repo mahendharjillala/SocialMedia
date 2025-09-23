@@ -1,0 +1,51 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# Node / Frontend
+node_modules/
+dist/
+.cache/
+.npm/
+.yarn/
+.pnpm-store/
+coverage/
+.vite/
+.next/
+.nuxt/
+.svelte-kit/
+*.log
+*.log.*
+
+# Vite/React/Angular build outputs
+build/
+.out/
+
+# Env files (set locally)
+.env
+.env.*
+!.env.example
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Java/Maven Backend
+backend/target/
+*.iml
+.mvn/wrapper/maven-wrapper.jar
+
+# Docker
+**/.dockerignore
+**/Dockerfile*
+
+# Uploads/runtime data
+backend/uploads/
+
+# Misc
+Thumbs.db
+*.tmp

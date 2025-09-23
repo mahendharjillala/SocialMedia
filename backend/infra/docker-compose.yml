@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  backend:
+    image: mahendharjillala/socialmedia-backend:latest
+    container_name: socialmedia-backend
+    ports:
+      - "8084:8084"
+    environment:
+      TZ: "Asia/Kolkata"
+      # Use in-memory H2 database so backend can run without MySQL
+      SPRING_DATASOURCE_URL: "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
+      SPRING_DATASOURCE_USERNAME: "sa"
+      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.h2.Driver"
+      SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.H2Dialect"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+    volumes:
+      - socialmedia_uploads:/app/uploads
+    restart: unless-stopped
+
+  frontend:
+    image: mahendharjillala/socialmedia-frontend:latest
+    container_name: socialmedia-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  socialmedia_uploads:
