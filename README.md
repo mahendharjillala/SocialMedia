@@ -5,7 +5,7 @@ This repository contains both the backend (Java/Maven) and frontend (Node/Vite) 
 ## Structure
 
 - `backend/` — Spring Boot (Maven) service
-- `frontend/` — Vite + TypeScript + Tailwind frontend
+- `frontend/` — Vite + JS + Tailwind frontend
 
 ## Getting Started
 
